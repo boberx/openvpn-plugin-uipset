@@ -180,7 +180,12 @@ OPENVPN_EXPORT int openvpn_plugin_func_v3 (
 						if ( uipset_request ( &uclient, UIPSET_CMD_TST, plugin->ipset_common_set, set_str, &r ) != 1 )
 							plugin->log ( PLOG_ERR, logprefix, "openvpn_plugin_func_v3: uipset_request failed: %s", r.msg );
 						else if ( r.ret != 1 )
-							plugin->log ( PLOG_ERR, logprefix, "openvpn_plugin_func_v3: uipset_request ret: [%d]", r.ret );
+						{
+							plugin->log ( PLOG_DEBUG, logprefix, "openvpn_plugin_func_v3: uipset_request ret: [%d]", r.ret );
+							plugin->log ( PLOG_WARN, logprefix, "openvpn_plugin_func_v3: there is no set [%s] in [%s] set", set_str, plugin->ipset_common_set );
+							
+							rc = OPENVPN_PLUGIN_FUNC_DEFERRED;
+						}
 						else if ( uipset_request ( &uclient, UIPSET_CMD_ADD, set_str, rip_str, &r ) != 1 )
 							plugin->log ( PLOG_ERR, logprefix, "openvpn_plugin_func_v3: uipset_request failed" );
 						else
